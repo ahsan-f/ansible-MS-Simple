@@ -1,0 +1,45 @@
+name: Ansible Docker Lab CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-ansible-lab:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate SSH key pair
+        run: |
+          mkdir -p ./.ssh
+          ssh-keygen -t rsa -N "" -f ./.ssh/id_rsa
+          mv ./.ssh/id_rsa.pub ./authorized_keys
+          
+      - name: Log SSH keys
+        run: |
+          echo "Private Key:"
+          cat ./.ssh/id_rsa
+          echo "Public Key:"
+          cat ./authorized_keys
+          
+      - name: Build and start Docker containers
+        run: |
+          docker-compose -f docker-compose.yml up --build -d
+          
+      - name: Wait for containers to be ready
+        run: sleep 10
+
+      - name: Copy SSH key to controller container
+        run: docker cp ./.ssh/id_rsa ansible-controller:/root/.ssh/id_rsa
+        
+      - name: Run Ansible playbook
+        run: |
+          docker exec ansible-controller ansible-playbook -i /ansible/inventory.ini /ansible/playbooks/site.yml
+          
+      - name: Teardown lab
+        if: always()
+        run: docker-compose -f docker-compose.yml down
