@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Ansible via pip
-COPY requirements.txt .
+COPY ./ansible/requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Set up SSH directory for keys
@@ -23,3 +23,6 @@ VOLUME /root/.ssh
 
 # Set working directory
 WORKDIR /ansible
+
+# This command keeps the container running indefinitely
+CMD ["tail", "-f", "/dev/null"]
