@@ -7,4 +7,4 @@
 
       - name: Get OS info
         ansible.builtin.debug:
-          msg: "The OS is {{ ansible_distribution }} {{ ansible_distribution_version }}"
+         msg: "The OS is {{ ansible_distribution }} {{ ansible_distribution_version }}"
