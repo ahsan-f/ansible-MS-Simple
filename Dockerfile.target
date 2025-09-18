@@ -1,0 +1,27 @@
+FROM ubuntu:22.04
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    openssh-server \
+    python3 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up SSH
+RUN mkdir /var/run/sshd
+EXPOSE 22
+
+# Create a non-root user for Ansible to connect as
+RUN useradd -ms /bin/bash ansible
+RUN echo "ansible:password" | chpasswd
+RUN usermod -aG sudo ansible
+RUN echo "ansible ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Copy the SSH public key from a volume (to be mounted by docker-compose)
+COPY authorized_keys /home/ansible/.ssh/authorized_keys
+RUN chown -R ansible:ansible /home/ansible/.ssh
+RUN chmod 700 /home/ansible/.ssh
+RUN chmod 600 /home/ansible/.ssh/authorized_keys
+
+# Run SSH service
+CMD ["/usr/sbin/sshd", "-D"]
