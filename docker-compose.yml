@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile.controller
+    container_name: ansible-controller
+    volumes:
+      - ./ansible:/ansible
+      - ssh_key_volume:/root/.ssh
+    networks:
+      ansible_network:
+        ipv4_address: 172.18.0.2
+
+  target1:
+    build:
+      context: .
+      dockerfile: Dockerfile.target
+    container_name: target-node-1
+    volumes:
+      - ssh_key_volume:/home/ansible/.ssh
+    networks:
+      ansible_network:
+        ipv4_address: 172.18.0.3
+
+  target2:
+    build:
+      context: .
+      dockerfile: Dockerfile.target
+    container_name: target-node-2
+    volumes:
+      - ssh_key_volume:/home/ansible/.ssh
+    networks:
+      ansible_network:
+        ipv4_address: 172.18.0.4
+
+networks:
+  ansible_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+
+volumes:
+  ssh_key_volume:
