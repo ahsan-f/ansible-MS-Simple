@@ -1,4 +1,6 @@
 name: Ansible Docker Lab CI/CD
+permissions:
+  contents: read
 
 on:
   push:
