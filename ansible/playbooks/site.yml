@@ -1,10 +1,30 @@
 ---
-- name: Test connectivity and gather facts
+- name: Deploy a basic web server
   hosts: targets
+  become: yes
   tasks:
-      - name: Ping all target hosts
-        ansible.builtin.ping
+    - name: Install Apache on Debian/Ubuntu
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
 
-      - name: Get OS info
-        ansible.builtin.debug:
-         msg: "The OS is {{ ansible_distribution }} {{ ansible_distribution_version }}"
+    - name: Start and enable Apache service
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Nginx on CentOS/Red Hat
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Start and enable Nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
