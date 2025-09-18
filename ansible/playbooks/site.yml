@@ -4,7 +4,9 @@
   tasks:
     - name: Ping all target hosts
       ansible.builtin.ping
-    
+
     - name: Get OS info
+      # The `debug` module needs to be indented by two spaces under the task name.
+      # The `msg` key must also be indented by two spaces under `debug`.
       ansible.builtin.debug:
         msg: "The OS is {{ ansible_distribution }} {{ ansible_distribution_version }}"
