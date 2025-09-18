@@ -4,6 +4,7 @@ FROM ubuntu:22.04
 RUN apt-get update && apt-get install -y \
     openssh-server \
     python3 \
+    sudo \             # <-- Add sudo to the list
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
@@ -15,6 +16,7 @@ EXPOSE 22
 RUN useradd -ms /bin/bash ansible
 RUN echo "ansible:password" | chpasswd
 RUN usermod -aG sudo ansible
+# Grant passwordless sudo to the 'ansible' user
 RUN echo "ansible ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Copy the SSH public key from a volume (to be mounted by docker-compose)
