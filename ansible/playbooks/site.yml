@@ -6,7 +6,5 @@
       ansible.builtin.ping
 
     - name: Get OS info
-      # The `debug` module is correctly indented by two spaces.
       ansible.builtin.debug:
-        # The `msg` parameter is correctly indented by two spaces under `debug`.
         msg: "The OS is {{ ansible_distribution }} {{ ansible_distribution_version }}"
